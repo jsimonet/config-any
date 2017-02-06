@@ -31,6 +31,7 @@ This module gives the possibility to retreive a configuration data from many sou
 # BACKENDS
 
 A backend is a class used to load a configuration source (a file, a database, etc…), to get a value from it, and/or to set a new one.
+It should inherit from Config::Backend to be usable with Config::Any.
 
 A backend can be readable only, writable only or both.
 
@@ -58,6 +59,7 @@ method set( Str:D $key, $data ) {
 
 ```perl6
 class Config::Any::Backend::Example
+	is   Config::Any::Backend
 	does Config::Any::Readable
 	does Config::Any::Writable {
 
