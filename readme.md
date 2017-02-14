@@ -55,6 +55,19 @@ method set( Str:D $key, $data ) {
 }
 ```
 
+### Usage example:
+
+```perl6
+# Write the config value to the first writable backend.
+Log.set( 'mysecondkey', 'second value' );
+
+# Write the config value to the backend where the result were found
+# If this backend is not writable, throw an error.
+my $result = Log.get( 'mykey' );
+$result.update( 'newfirstvalue' );
+Log.set( $result );
+```
+
 ## Example
 
 ```perl6
