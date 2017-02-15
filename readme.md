@@ -5,7 +5,6 @@ Confi::Any - Manage configuration data from many sources (files, environment var
 # SYNOPSIS
 
 ```perl6
-# OO way
 use Config::Any;
 use Config::Backend::File::JSON;
 use Config::Backend::Env;
@@ -53,6 +52,15 @@ Provide the set method.
 method set( Str:D $key, $data ) {
 	...
 }
+```
+
+## Other syntax (TODO):
+
+Use a hash syntax?
+```perl6
+my $result = $config{'key'};
+$result.update( 'newvalue' );
+$config{'key'} = $result;
 ```
 
 ### Usage example:
