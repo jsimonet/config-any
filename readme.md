@@ -1,6 +1,6 @@
 # NAME
 
-Confi::Any - Manage configuration data from many sources (files, environment variables, databases, …).
+Config::Any - Manage configuration data from many sources (files, environment variables, databases, …).
 
 # SYNOPSIS
 
@@ -49,7 +49,11 @@ method get( Str:D $key ) {
 Provide the set method.
 
 ```perl6
-method set( Str:D $key, $data ) {
+multi method set( Str:D $key, $data ) {
+	...
+}
+
+multi method set( Config::Any::Result $data ) {
 	...
 }
 ```
@@ -67,13 +71,13 @@ $config{'key'} = $result;
 
 ```perl6
 # Write the config value to the first writable backend.
-Log.set( 'mysecondkey', 'second value' );
+Config.set( 'mysecondkey', 'second value' );
 
 # Write the config value to the backend where the result were found
 # If this backend is not writable, throw an error.
-my $result = Log.get( 'mykey' );
+my $result = Config.get( 'mykey' );
 $result.update( 'newfirstvalue' );
-Log.set( $result );
+Config.set( $result );
 ```
 
 ## Example
