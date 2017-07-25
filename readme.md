@@ -10,8 +10,10 @@ use Config::Backend::File::JSON;
 use Config::Backend::Env;
 
 my $config = Config::Any.new;
-$config.add( Config::Backend::File::JSON.new( file => '/full/path/to/file.conf' ) );
+
+# Search in Env and then in File::JSON
 $config.add( Config::Backend::Env.new );
+$config.add( Config::Backend::File::JSON.new( file => '/full/path/to/file.json' ) );
 
 $config.get( 'db.host' );
 # Will return a Config::Result
@@ -62,7 +64,7 @@ multi method set( Config::Any::Result $data ) {
 
 Use a hash syntax?
 ```perl6
-my $result = $config{'key'};
+my $result = $config{'key'}; # Or $config<key>
 $result.update( 'newvalue' );
 $config{'key'} = $result;
 ```
@@ -127,9 +129,10 @@ Result will be:
 
 ## Config::Any::dump
 
-dump fonctionnality could be a get-all extention: get-all( '*' )
+dump fonctionnality could be a get-all extention: get-all( '\*' )
 
 # Security
+
 Some configuration should not be accessed everywhere (database passwords). Is it possible to detect caller?
 
   * Using acl
@@ -139,4 +142,13 @@ use Config;
 #            SRC           KEY         VALUE
 Config::ACL( '*',          'db.*',    'reject' );
 Config::ACL( 'My::Module', 'db.host', 'pass' );
+```
+
+# Key requirements
+
+Throws an error if the key(s) cannot be found in backends.
+
+```perl6
+Config::Any.required-key( 'db.host' );
+Config::Any.required-keys( 'db.host', 'db.user', 'db.password' );
 ```
