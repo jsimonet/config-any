@@ -10,7 +10,7 @@
 		"Config::Any::Backend::Environment" : "lib/Config/Any/Backend/Environment.pm6",
 		"Config::Any::Backend::Memory" : "lib/Config/Any/Backend.pm6",
 		"Config::Any::Backend::Reader" : "lib/Config/Any/Backend.pm6",
-		"Config::Any::Backend::Writer" : "lib/Config/Any/Backend.pm6",
+		"Config::Any::Backend::Writer" : "lib/Config/Any/Backend.pm6"
 	},
 	"depends" : [],
 	"resources" : [ ],
