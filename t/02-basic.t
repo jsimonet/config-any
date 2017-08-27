@@ -47,7 +47,21 @@ subtest {
   lives-ok { $config.required-key('test') }, 'Required key is present.';
   dies-ok { $config.required-key('non-existant') }, 'Absent required key thows an exception';
   $config.set( 'key2', 'value2' );
+  throws-like { $config.required-key( 'non-existant') }, X::Config::Any::RequiredKeyNotFound;
+
   lives-ok { $config.required-key( 'test', 'key2' ); }, 'Required keys "test" and "key2" are present.';
+  throws-like { $config.required-key( 'test', 'non-existant') }, X::Config::Any::RequiredKeyNotFound;
+  throws-like { $config.required-key( 'non-existant', 'test') }, X::Config::Any::RequiredKeyNotFound;
+  throws-like { $config.required-key( 'non-existant', 'non-existant-2') }, X::Config::Any::RequiredKeyNotFound;
+  {
+    CATCH {
+      when X::Config::Any::RequiredKeyNotFound {
+        is-deeply $_.keys, ['non-existant', 'non-existant-2'], 'Exception instance has the good keys.';
+      }
+      default { flunk 'Not the right exception.'}
+    };
+    $config.required-key( 'non-existant', 'test', 'non-existant-2');
+  };
 }, 'Testing required keys.';
 
 done-testing;

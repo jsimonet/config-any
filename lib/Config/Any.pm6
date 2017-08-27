@@ -108,8 +108,8 @@ class Config::Any {
 	}
 
 	multi method required-key( *@keys ) {
-		my @found = map { self!search-required-key( $_ ) }, flat @keys;
-		die X::Config::Any::RequiredKeyNotFound.new( :keys(flat @keys) ) if any(@found) == False;
+		my @found = grep { ! self!search-required-key( $_ ) }, flat @keys;
+		die X::Config::Any::RequiredKeyNotFound.new( :keys(flat @found) ) if @found.elems > 0;
 	}
 
 	# Resolution order
