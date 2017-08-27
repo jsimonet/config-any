@@ -1,3 +1,5 @@
+https://travis-ci.org/jsimonet/config-any.svg?branch=master
+
 # NAME
 
 Config::Any - Manage configuration data from many sources (files, environment variables, databases, …).
