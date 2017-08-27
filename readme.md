@@ -152,3 +152,27 @@ Throws an error if the key(s) cannot be found in backends.
 Config::Any.required-key( 'db.host' );
 Config::Any.required-keys( 'db.host', 'db.user', 'db.password' );
 ```
+
+## Schema validation
+
+We can imagine to extend this system with a more generalised one which would allow
+type verifications for example.
+
+```perl6
+Config::Any.validate(
+	'database.username' => { :type(Str:D) }, # Checks if the value of 'username' is a Str:D
+	'database.host' => { * ~~ /<URI>/}       # Checks if the host value matches the regex
+);
+```
+
+# Exporting names into variables
+
+```perl6
+# JSON data example : { "database" : { "username" : "toto", "password" : "psw" } }
+Config::Any.export();
+
+# Configuration is available in current scope
+note $database.username, $database.password;
+
+# How to do with arrays? Do not export because un-named (exception)?
+```
