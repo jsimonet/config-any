@@ -8,6 +8,7 @@ use Test;
 
 use-ok 'Config::Any';
 use Config::Any;
+use Config::Any::Result;
 
 # config any has at least one backend : memory which allows getting and setting values in-memory
 my $config = Config::Any.new;
