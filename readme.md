@@ -1,4 +1,4 @@
-[![Build status](https://travis-ci.org/jsimonet/config-any.svg?branch=master)
+[![Build Status](https://travis-ci.org/jsimonet/config-any.svg?branch=master)](https://travis-ci.org/jsimonet/config-any)
 [![Build status](https://ci.appveyor.com/api/projects/status/kvd5vd1vg0q583nj/branch/master?svg=true)](https://ci.appveyor.com/project/jsimonet/config-any/branch/master)
 
 # NAME
