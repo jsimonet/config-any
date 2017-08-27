@@ -56,7 +56,7 @@ class Config::Any {
 		for @!backends -> $b {
 			if $b ~~ Config::Any::Backend::Writer {
 				$b.set( $key, $value );
-				dd $b, $value;
+				# dd $b, $value;
 				$res = Config::Any::Result.new( :backend( $b ), :value( $value ) );
 				last
 			}
@@ -87,12 +87,11 @@ class Config::Any {
 		}
 	}
 
-	method !search-key( $key ) {
+	method !search-required-key( $key ) {
 		my $res = False;
 		for @!backends -> $b {
 			if $b ~~ Config::Any::Backend::Requirable {
-				$b.require( $key );
-				$res = True;
+				$res = $b.require( $key );
 				last;
 			}
 		}
@@ -101,7 +100,7 @@ class Config::Any {
 
 	# Check if at least one result exists
 	multi method required-key( Str:D $key ) {
-		unless self!search-key( $key ) {
+		unless self!search-required-key( $key ) {
 			# die "Required key($key) not found in any backend." unless $res;
 			die X::Config::Any::RequiredKeyNotFound.new( :keys($key) );
 		}
@@ -109,7 +108,7 @@ class Config::Any {
 	}
 
 	multi method required-key( *@keys ) {
-		my @found = map { self!search-key( $_ ) }, flat @keys;
+		my @found = map { self!search-required-key( $_ ) }, flat @keys;
 		die X::Config::Any::RequiredKeyNotFound.new( :keys(flat @keys) ) if any(@found) == False;
 	}
 

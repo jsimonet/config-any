@@ -19,7 +19,8 @@ class Config::Any::Backend { * }
 
 class Config::Any::Backend::Memory is Config::Any::Backend
                      does Config::Any::Backend::Reader
-                     does Config::Any::Backend::Writer {
+                     does Config::Any::Backend::Writer
+                     does Config::Any::Backend::Requirable {
 
 	has %!data;
 
@@ -29,5 +30,9 @@ class Config::Any::Backend::Memory is Config::Any::Backend
 
 	method set( Str:D $key, $data ) {
 		%!data{$key} = $data;
+	}
+
+	method require( Str:D $key ) {
+		%!data{$key}:exists.so
 	}
 }
