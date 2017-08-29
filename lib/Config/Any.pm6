@@ -15,7 +15,7 @@ class Config::Any {
 			my $v = $b.get: $key;
 			return Config::Any::Result.new( backend => $b, value => $v ) if $v;
 		}
-		return Any;
+		return Nil;
 	}
 
 	multi method get( *@keys where @keys.all ~~ Str:D ) {
@@ -65,15 +65,17 @@ class Config::Any {
 	}
 
 	multi method add( Config::Any::Backend:D $config ) {
-		unshift @!backends, $config;
+		so unshift @!backends, $config;
 	}
 
 	multi method add( Config::Any::Backend:U $configClass ) {
-		unshift @!backends, $configClass.new;
+		so unshift @!backends, $configClass.new;
 	}
 
 	# TODO: Seems to be bugged
 	multi method add( Str:D $config-class-name ) {
+		...;
+		# TODO
 		require "Config::Any::Backend::$config-class-name";
 	}
 

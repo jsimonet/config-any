@@ -1,10 +1,12 @@
 use v6.c;
 
 =head1 Basic tests
+=para
+  Test with only one backend.
 
 use Test;
 
-# plan 2;
+plan 8;
 
 use-ok 'Config::Any';
 use Config::Any;
@@ -13,6 +15,8 @@ use Config::Any::Result;
 # config any has at least one backend : memory which allows getting and setting values in-memory
 my $config = Config::Any.new;
 
+can-ok $config, 'get';
+can-ok $config, 'get-all';
 can-ok $config, 'set';
 
 # set and get should returns the same result in this case
@@ -63,5 +67,3 @@ subtest {
     $config.required-key( 'non-existant', 'test', 'non-existant-2');
   };
 }, 'Testing required keys.';
-
-done-testing;
