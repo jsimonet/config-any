@@ -179,3 +179,27 @@ note $database.username, $database.password;
 
 # How to do with arrays? Do not export because un-named (exception)?
 ```
+
+# Tree modification
+
+A module may need a key under a certain tree, like 'database.host, database.user, etc…'.
+
+The configuration tree can be viewed as something like :
+
+```YAML
+- app1
+  - database
+    - host = 'hostname'
+    - user = 'username'
+```
+
+It can be usefull to rename/present a subtree differently:
+```YAML
+  - database
+    - host = 'hostname'
+    - user = 'username'
+```
+
+```perl6
+Config::Any.will-see( :module('CallerModule'), :from('/app1'), :to('/'));
+```
