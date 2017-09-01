@@ -64,6 +64,11 @@ class Config::Any {
 		return $res;
 	}
 
+	# TODO: set $result to the same it comes from
+	multi method set( Config::Any::Result:D $result ) {
+		...
+	}
+
 	multi method add( Config::Any::Backend:D $backend ) {
 		# Throw an exception on error
 		@!backends.splice( * - 1, 0, $backend );

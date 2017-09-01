@@ -39,6 +39,12 @@ class ReaderBackend is Config::Any::Backend does Config::Any::Backend::Reader {
   method get(Str:D $key) { %!data{$key} }
 }
 
+class WriterBackend is Config::Any::Backend does Config::Any::Backend::Writer {
+  has %.data;
+  method get(Str:D $key) { %!data{$key} }
+  method set(Str:D $key, $value) { %!data{$key} = $value }
+}
+
 subtest {
   my $config = Config::Any.new;
   $config.add( ReaderBackend.new: :data( :color('red'), :lang('Perl 6') ) );
@@ -54,12 +60,13 @@ subtest {
   $config.add( ReaderBackend.new: :data( :color('red'), :lang('Perl 6') ) );
   $config.add( ReaderBackend.new: :data( :animal('dog'), :lang('Perl 5') ) );
 
-  plan 7;
+  plan 8;
   is $config.get('lang'), 'Perl 6', 'Getting a key from the first backend.';
   is $config.get('animal'), 'dog', 'Getting a key from the second backend.';
   is $config.get('non-existant'), Nil, 'Getting a non existant key returns Nil.';
 
   my @results = $config.get-all( 'lang' );
+  is @results.elems, 2;
   cmp-ok @results[0], '~~', Config::Any::Result, 'The result from the first backend is a Config::Any::Result.';
   is @results[0].value, 'Perl 6';
 
@@ -68,6 +75,23 @@ subtest {
 }, 'Getting values with two Readers.';
 
 subtest {
-  plan 0;
+  my $config = Config::Any.new;
+  $config.add( ReaderBackend.new( data => (:color('red'), :foo('bar')) ) );
+  $config.add( WriterBackend.new( data => (:color('yellow')) ) );
+
+  plan 7;
+
+  my $result-set = $config.set( 'color', 'magenta' );
+  cmp-ok $result-set, '~~', Config::Any::Result;
+  is $result-set, 'magenta';
+
+  my @results = $config.get-all( 'color' );
+  is @results.elems, 2;
+  cmp-ok @results[0], '~~', Config::Any::Result;
+  is @results[0], 'red';
+  cmp-ok @results[1], '~~', Config::Any::Result;
+  is @results[1], 'magenta';
+
+  todo 'Tests setting a new value from a result, should be saved in the backend it comes from.';
 
 }, 'Mixing Reader and Writer backends.';
