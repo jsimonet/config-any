@@ -147,6 +147,11 @@ Config::ACL( '*',          'db.*',    'reject' );
 Config::ACL( 'My::Module', 'db.host', 'pass' );
 ```
 
+```
+'reject from "*" key "db.key"'
+'access from "My::Module" to "db.host" option readonly'
+```
+
 # Key requirements
 
 Throws an error if the key(s) cannot be found in backends.
