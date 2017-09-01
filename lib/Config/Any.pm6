@@ -64,12 +64,16 @@ class Config::Any {
 		return $res;
 	}
 
-	multi method add( Config::Any::Backend:D $config ) {
-		so unshift @!backends, $config;
+	multi method add( Config::Any::Backend:D $backend ) {
+		# Throw an exception on error
+		@!backends.splice( * - 1, 0, $backend );
+		True
 	}
 
-	multi method add( Config::Any::Backend:U $configClass ) {
-		so unshift @!backends, $configClass.new;
+	multi method add( Config::Any::Backend:U $backendClass ) {
+		# Throw an exception on error
+		@!backends.splice( * - 1, 0, $backendClass.new );
+		True
 	}
 
 	# TODO: Seems to be bugged

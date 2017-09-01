@@ -46,7 +46,7 @@ subtest {
   plan 2;
   is $config.get('lang'), 'Perl 6', 'Getting a key from the first backend.';
   is $config.get('non-existant'), Nil, 'Getting a non existant key returns Nil.';
-}, 'Getting values with only one Reader.';
+}, 'Getting values from only one Reader.';
 
 
 subtest {
@@ -55,18 +55,15 @@ subtest {
   $config.add( ReaderBackend.new: :data( :animal('dog'), :lang('Perl 5') ) );
 
   plan 7;
-  todo 'Backend is «unshifted», so bad response returned.';
   is $config.get('lang'), 'Perl 6', 'Getting a key from the first backend.';
   is $config.get('animal'), 'dog', 'Getting a key from the second backend.';
   is $config.get('non-existant'), Nil, 'Getting a non existant key returns Nil.';
 
   my @results = $config.get-all( 'lang' );
-  todo '', 2;
-  is @results[0], Config::Any::Result;
+  cmp-ok @results[0], '~~', Config::Any::Result, 'The result from the first backend is a Config::Any::Result.';
   is @results[0].value, 'Perl 6';
 
-  todo '', 2;
-  is @results[1], Config::Any::Result;
+  cmp-ok @results[1], '~~', Config::Any::Result;
   is @results[1].value, 'Perl 5';
 }, 'Getting values with two Readers.';
 
