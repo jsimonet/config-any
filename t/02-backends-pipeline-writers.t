@@ -31,7 +31,6 @@ is @results[0], 'red';
 cmp-ok @results[1], '~~', Config::Any::Result;
 is @results[1], 'magenta';
 
-# todo 'Tests setting a new value from a result, should be saved in the backend it comes from.';
 @results[1].value = 'newcolor';
 
 $config.set( @results[1] );
