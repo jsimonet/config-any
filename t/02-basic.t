@@ -6,7 +6,7 @@ use v6.c;
 
 use Test;
 
-plan 8;
+plan 11;
 
 use-ok 'Config::Any';
 use Config::Any;
@@ -19,6 +19,10 @@ can-ok $config, 'get';
 can-ok $config, 'get-all';
 can-ok $config, 'set';
 
+can-ok Config::Any, 'get';
+can-ok Config::Any, 'get-all';
+can-ok Config::Any, 'set';
+
 # set and get should returns the same result in this case
 # because the first and only backend set is Memory which is Reader and Writer.
 subtest {
@@ -29,14 +33,17 @@ subtest {
 }, 'Testing result of Config::Any::set';
 
 subtest {
+  plan 4;
   my $result-of-get = $config.get( 'test' );
   isa-ok $result-of-get, Config::Any::Result;
   isa-ok $result-of-get.backend, Config::Any::Backend::Memory;
   is $result-of-get.value, 'val1', 'Getting the correct value';
+  is $result-of-get.key, 'test', 'Getting the correct key';
 }, 'Testing result of Config::Any::get';
 
 # Get-all
 subtest {
+  plan 6;
   my @results = $config.get-all( 'test' );
   isa-ok @results, List;
   is @results.elems, 1, 'There is only one element in the list.';
@@ -44,6 +51,7 @@ subtest {
   isa-ok @results[0], Config::Any::Result;
   isa-ok @results[0].backend, Config::Any::Backend::Memory;
   is @results[0].value, 'val1', 'Getting the correct value';
+  is @results[0].key, 'test', 'Getting the correct key';
 }, 'Testing result of Config::Any::get-all';
 
 # Required key tests

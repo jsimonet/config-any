@@ -4,24 +4,40 @@ use Config::Any::Backend;
 use Config::Any::Result;
 
 class Config::Any {
+	my Config::Any $instance;
 	has @!backends = (Config::Any::Backend::Memory.new); # Default backend
+
+	method new {
+		unless $instance {
+			$instance = Config::Any.bless;
+		}
+		return $instance;
+	}
 
 	=head1 get
 	=para
 		Search and return the value associated with the key $key.
 
-	multi method get( Str:D $key ) is export {
+	multi method get( Config::Any:D: Str:D $key ) {
 		for @!backends -> $b {
 			my $v = $b.get: $key;
-			return Config::Any::Result.new( backend => $b, value => $v ) if $v;
+			return Config::Any::Result.new( backend => $b, :$key, value => $v ) if $v;
 		}
 		return Nil;
 	}
 
-	multi method get( *@keys where @keys.all ~~ Str:D ) {
+	multi method get( Config::Any:U: $key ) {
+		return self.new.get( $key );
+	}
+
+	multi method get( Config::Any:D: *@keys where @keys.all ~~ Str:D ) {
 		return map {
 			self.get( $_ )
 		}, @keys;
+	}
+
+	multi method get( Config::Any:U:  *@keys where @keys.all ~~ Str:D ) {
+		return self.new.get( @keys );
 	}
 
 	# TODO
@@ -30,11 +46,11 @@ class Config::Any {
 		...
 	}
 
-	multi method get-all( Str:D $key ) is export {
+	multi method get-all( Str:D $key ) {
 		return eager gather {
 			for @!backends -> $b {
 				with $b.get( $key ) -> $v {
-					take Config::Any::Result.new( backend => $b, value => $v );
+					take Config::Any::Result.new( backend => $b, :$key, value => $v );
 				}
 			}
 		};
@@ -51,13 +67,13 @@ class Config::Any {
 
 	# Set the value in the first "writer" backend found
 	# Returns a Config::Result with the backend where the value was stored
-	multi method set( Str:D $key, $value ) {
+	multi method set( Config::Any:D: Str:D $key, $value ) {
 		my $res;
 		for @!backends -> $b {
 			if $b ~~ Config::Any::Backend::Writer {
 				$b.set( $key, $value );
 				# dd $b, $value;
-				$res = Config::Any::Result.new( :backend( $b ), :value( $value ) );
+				$res = Config::Any::Result.new( :backend( $b ), :$key, :value( $value ) );
 				last
 			}
 		}
@@ -65,20 +81,35 @@ class Config::Any {
 	}
 
 	# TODO: set $result to the same it comes from
-	multi method set( Config::Any::Result:D $result ) {
-		...
+	multi method set( Config::Any:D: Config::Any::Result:D $result ) {
+		my $res = False;
+		for @!backends -> $b {
+			if $b ~~ $result.backend {
+				$b.set( $result.key, $result.value );
+				# dd $b, $value;
+				$res = $result;
+				last
+			}
+		}
+		return $res;
 	}
 
-	multi method add( Config::Any::Backend:D $backend ) {
+	multi method add( Config::Any:D: Config::Any::Backend:D $backend ) {
 		# Throw an exception on error
 		@!backends.splice( * - 1, 0, $backend );
 		True
 	}
+	multi method add( Config::Any:U: Config::Any::Backend:D $backend ) {
+		return self.new.add( $backend );
+	}
 
-	multi method add( Config::Any::Backend:U $backendClass ) {
+	multi method add( Config::Any:D: Config::Any::Backend:U $backendClass ) {
 		# Throw an exception on error
 		@!backends.splice( * - 1, 0, $backendClass.new );
 		True
+	}
+	multi method add( Config::Any:U: Config::Any::Backend:U $backendClass ) {
+		return self.new.add( $backendClass );
 	}
 
 	# TODO: Seems to be bugged
