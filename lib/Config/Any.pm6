@@ -80,7 +80,6 @@ class Config::Any {
 		return $res;
 	}
 
-	# TODO: set $result to the same it comes from
 	multi method set( Config::Any:D: Config::Any::Result:D $result ) {
 		my $res = False;
 		for @!backends -> $b {
