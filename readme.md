@@ -185,7 +185,7 @@ note $database.username, $database.password;
 # How to do with arrays? Do not export because un-named (exception)?
 ```
 
-# Tree modification
+# Tree visibility
 
 A module may need a key under a certain tree, like 'database.host, database.user, etc…'.
 
@@ -206,5 +206,6 @@ It can be usefull to rename/present a subtree differently:
 ```
 
 ```perl6
+# Allows to modify the way a client module can see a data.
 Config::Any.will-see( :module('CallerModule'), :from('/app1'), :to('/'));
 ```

@@ -14,13 +14,43 @@ class Config::Any {
 		return $instance;
 	}
 
+	sub get-caller-package {
+		my $caller;
+		for Backtrace.new -> $b {
+			if $b.code ~~ Routine {
+				if $b.code.package.^name ~~ /^ 'Config::Any' | ^ 'Backtrace' / {
+					next;
+				}
+				$caller = $b.code.package.^name;
+				last;
+			}
+		}
+		$caller //= '';
+	}
+
 	=head1 get
 	=para
 		Search and return the value associated with the key $key.
 
 	multi method get( Config::Any:D: Str:D $key ) {
+		my $caller = get-caller-package;
+		my $real-key = '.'~$key;
+		if $caller && ( %!tree-view{$caller}:exists ) {
+			# note "orig key : $key";
+			if %!tree-view{$caller}{'to'}:exists {
+				my $to = %!tree-view{$caller}{'to'}~'.';
+				my $from = %!tree-view{$caller}{'from'}~'.';
+				# note "$to  $from";
+				$real-key ~~ s/^$to/$from/;
+			}
+			# note "key change : $key";
+		}
+
+		# Remove the leading dot
+		$real-key ~~ s/^\.//;
+
 		for @!backends -> $b {
-			my $v = $b.get: $key;
+			my $v = $b.get: $real-key;
 			return Config::Any::Result.new( backend => $b, :$key, value => $v ) if $v;
 		}
 		return Nil;
@@ -156,5 +186,12 @@ class Config::Any {
 	# Resolution order
 	method ro {
 		@!backends».join
+	}
+
+	has %tree-view;
+
+	multi method will-see( Str:D :$module is required, :$from! is required, :$to = '' ) {
+		%!tree-view{$module} = { :$from, :$to };
+		return True;
 	}
 }

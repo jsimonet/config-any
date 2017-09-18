@@ -52,7 +52,37 @@ say $config.get-all( <key1 key2> );
 # say "get( key, key ) : ", $config.get( 'key1', 'key2' );
 
 # say $config.required-key( 'key1' );
-say $config.required-key( 'key3', 'key2' );
+# say $config.required-key( 'key3', 'key2' );
 # TODO
 # Config::ACL
 # Use configuration from a module with defined backends from main
+
+$config.set( 'app1.db.host', 'houstval' );
+$config.set( 'app1.db.user', 'userval' );
+$config.will-see( :module<Foo>, :from<app1> );
+# say $config.get( 'db.host' );
+$config.will-see( :module<Bar>, :from<app1.db> );
+$config.will-see( :module<Bob>, :from<app1..db> );
+
+# Should we use / instead of . ?
+# .will-see( :from</app1/db>, :to</> );
+# .get( '/host' );
+
+note "\n\n\n";
+
+dd class Foo {
+	method foo {
+		Config::Any.get( 'db.host' );
+	}
+}.foo;
+
+dd class Bar {
+	method bar {
+		Config::Any.get( 'host' );
+	}
+}.bar;
+dd class Bob {
+	method bar {
+		Config::Any.get( 'host' );
+	}
+}.bar;
